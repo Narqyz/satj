@@ -1,4 +1,4 @@
 ﻿typedef struct {
 	int PivotRow; //Жолдардың саны
-	double MaxValue; //Жолдағы ең үлкен элемент
+	double MaxValue; //Жолдағы ең үлке
 } TThreadPivotRow;
