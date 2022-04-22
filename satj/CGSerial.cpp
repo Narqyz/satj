@@ -74,8 +74,16 @@ void CGSerial::resultCalculation(double** pMatrix, double* pVector, double* pRes
 			* және қайталау саны массив өлшемінен кіші болса
 			* жаңа градиент, бағыт, қадам есептейміз
 			*/
-		(CurrentGradient_sum >= Accuracy && Iter < MaxIter);
+		(diff(PreviousApproximation, CurrentApproximation, Size) >= Accuracy && Iter < MaxIter);
 	for (int i = 0; i < Size; i++)
 		pResult[i] = CurrentApproximation[i];
 	iterationsCount = Iter;
+}
+// алдыңғы шешім мен жаңа шешім айырмасын есептейміз
+double CGSerial::diff(double* vector1, double* vector2, int Size) {
+	double sum = 0;
+	for (int i = 0; i < Size; i++) {
+		sum += fabs(vector1[i] - vector2[i]);
+	}
+	return sum;
 }
