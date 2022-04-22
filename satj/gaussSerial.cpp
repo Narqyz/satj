@@ -4,8 +4,8 @@
 
 gaussSerial::gaussSerial(int size) {
 	mSize = size;
-	pSerialPivotIter = new int[size];
-	pSerialPivotPos = new int[size];
+	pSerialPivotIter = new int[size]; // хранить в каком цикле стал главным определенная строка, нужен для прямого хода
+	pSerialPivotPos = new int[size];  // хранить порядок строк по итерации, нужен для обратного хода
 	//Бұл жолдарға әлі кірмегенімізді көрсету үшін -1 толтырамыз
 	for (int i = 0; i < size; i++) {
 		pSerialPivotIter[i] = -1;
@@ -30,7 +30,7 @@ int gaussSerial::serialGaussianElimination(double** pMatrix, double* pVector) {
 	int PivotRow;
 	// Ағымдағы айналмалы жолдың саны
 	for (Iter = 0; Iter < mSize; Iter++) {
-		//Айналмалы жолды табу
+		//жетекші жолды максимумы бойынша анықтау жолды табу
 		PivotRow = findPivotRow(pMatrix, Iter);
 		pSerialPivotPos[Iter] = PivotRow;
 		pSerialPivotIter[PivotRow] = Iter;
