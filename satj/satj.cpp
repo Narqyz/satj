@@ -21,7 +21,8 @@ int main(){
 	int mSize;
 	printf("Enter matrix size \n");
 	std::cin >> mSize;
-	int threads[4] = {2, 4, 8, 16};
+	int threads_for_calc[] = {2, 4, 8, 16, 32};
+	int experiment_count = sizeof(threads_for_calc) / sizeof(threads_for_calc[0]);
 
 	double **pMatrix; //Коэффицент матрицасы (екі өлшемді)
 	double *pVector; //Сызықтық жүйенің оң жағы
@@ -55,15 +56,15 @@ int main(){
 	matrixHelpers::testSolvingResult(pMatrix, pVector, pResult, mSize);
 	Sleep(600);
 
-	for (int i = 0; i < 4; i++){
+	for (int i = 0; i < experiment_count; i++){
 		// Гаусс параллель алгоритмі threads[i] поток
-		//Уақытты өлшеу
+		//Уақытты өлшеуe
 		startTime = omp_get_wtime();
 		gaussParallelSolver = new gaussParallel(mSize);
-		gaussParallelSolver->resultCalculation(pMatrix, pVector, pResult, threads[i]);
+		gaussParallelSolver->resultCalculation(pMatrix, pVector, pResult, threads_for_calc[i]);
 		//Жұмсалған уақыт
 		finishTime = omp_get_wtime();
-		printf("\nJumsalgan uakit: %f second, method: %s, threads count: %d", finishTime - startTime, "Gauss parallel", threads[i]);
+		printf("\nJumsalgan uakit: %f second, method: %s, threads count: %d", finishTime - startTime, "Gauss parallel", threads_for_calc[i]);
 		//Нәтижені тексеру
 		matrixHelpers::testSolvingResult(pMatrix, pVector, pResult, mSize);
 		Sleep(600);
@@ -84,15 +85,15 @@ int main(){
 	matrixHelpers::testSolvingResult(pMatrix, pVector, pResult, mSize);
 	Sleep(600);
 
-	for (int i = 0; i < 4; i++) {
+	for (int i = 0; i < experiment_count; i++) {
 		// CG параллель алгоритмі threads[i] поток
 		//Уақытты өлшеу
 		startTime = omp_get_wtime();
 		CGParallelSolver = new CGParallel();
-		CGParallelSolver->resultCalculation(pMatrix, pVector, pResult, mSize, threads[i]);
+		CGParallelSolver->resultCalculation(pMatrix, pVector, pResult, mSize, threads_for_calc[i]);
 		//Жұмсалған уақыт
 		finishTime = omp_get_wtime();
-		printf("\nJumsalgan uakit: %f second, method: %s, threads count: %d", finishTime - startTime, "CG parallel", threads[i]);
+		printf("\nJumsalgan uakit: %f second, method: %s, threads count: %d", finishTime - startTime, "CG parallel", threads_for_calc[i]);
 		//CG әдісінің бірі болса, онда қайталанулар санын көрсету керек
 		printf(", iteration sani: %d", CGParallelSolver->iterationsCount);
 		//Нәтижені тексеру
