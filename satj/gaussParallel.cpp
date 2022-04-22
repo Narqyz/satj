@@ -4,7 +4,7 @@
 #include "omp.h"
 #include "types.h"
 
-
+//конструктор - условие для доступа к классу
 gaussParallel::gaussParallel(int size) {
 	mSize = size;
 
@@ -73,7 +73,7 @@ int gaussParallel::columnElimination(double** pMatrix, double* pVector, int Pivo
 	double PivotValue, PivotFactor;
 	PivotValue = pMatrix[Pivot][Iter];
 #pragma omp parallel for private (PivotFactor) schedule(dynamic,1) // әр потокта өзінің PivotFactor бар, әр поток бос болса 1-ақ блок жұмыс істеуге алады. ол нагрузканы бөлуге көмектеседі
-	for (int i = 0; i < mSize; i++) {
+	for (int i = 0; i < mSize; i++) {  // ti1:i=0; ti2:i=1; --> ti2:i=2;-->ti2:i=3;-->ti1
 		if (pSerialPivotIter[i] == -1) {
 			PivotFactor = pMatrix[i][Iter] / PivotValue;
 			for (int j = Iter; j < mSize; j++) {

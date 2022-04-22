@@ -22,7 +22,7 @@ int main() {
 	printf("Enter matrix size \n");
 	std::cin >> mSize;
 	// эксперимент кезінде қандай потоктар санын қолдансын массиві
-	int threads_for_calc[] = { 2, 4, 8, 16, 32 };
+	int threads_for_calc[]= {2, 4, 8, 16, 32};
 	int experiment_count = sizeof(threads_for_calc) / sizeof(threads_for_calc[0]);
 
 	double** originalA; //Коэффицент матрицасы (екі өлшемді)
@@ -45,72 +45,58 @@ int main() {
 	CGSerial* CGSerialSolver;
 	CGParallel* CGParallelSolver;
 
-	double** pMatrix = originalA;
-	double* pVector = originalB;
+	double** pMatrix = originalA;//Присваиваем сгенерированную матрицу А 
+	double* pVector = originalB;//Присваиваем сгенерированную вектор В
+	pResult = new double[mSize];// Обнуляем вектор решений 
+	double startTime = omp_get_wtime(); //запускаем таймер
 	// Гаусс сызықты алгоритмі
-	//Уақытты өлшеу
-	double startTime = omp_get_wtime();
 	gaussSerialSolver = new gaussSerial(mSize);
 	gaussSerialSolver->resultCalculation(pMatrix, pVector, pResult);
-	//Жұмсалған уақыт
-	double finishTime = omp_get_wtime();
+	double finishTime = omp_get_wtime();  // останавливаем таймер, от полученного времени убавляем время старта, чтобы получить потраченнное время 
 	printf("\nJumsalgan uakit: %f second, method: %s", finishTime - startTime, "Gauss serial");
-	//Нәтижені тексеру
-	matrixHelpers::testSolvingResult(originalA, originalB, pResult, mSize);
+	matrixHelpers::testSolvingResult(originalA, originalB, pResult, mSize);	//Нәтижені тексеру
 	Sleep(600);
 
 	for (int i = 0; i < experiment_count; i++) {
+		pMatrix = originalA;//Присваиваем сгенерированную матрицу А 
+		pVector = originalB;//Присваиваем сгенерированную вектор В
+		pResult = new double[mSize];// Обнуляем вектор решений 
+		startTime = omp_get_wtime(); //запускаем таймер
 		// Гаусс параллель алгоритмі threads[i] поток
-		//Уақытты өлшеуe
-
-		pMatrix = originalA;
-		pVector = originalB;
-		pResult = new double[mSize];
-		startTime = omp_get_wtime();
-		gaussParallelSolver = new gaussParallel(mSize);
-		gaussParallelSolver->resultCalculation(pMatrix, pVector, pResult, threads_for_calc[i]);
-		//Жұмсалған уақыт
-		finishTime = omp_get_wtime();
-		printf("\nJumsalgan uakit: %f second, method: %s, threads count: %d", finishTime - startTime, "Gauss parallel", threads_for_calc[i]);
-		//Нәтижені тексеру
-		matrixHelpers::testSolvingResult(originalA, originalB, pResult, mSize);
+		gaussParallelSolver = new gaussParallel(mSize);// создаем объект - добавляем в друзья
+		gaussParallelSolver->resultCalculation(pMatrix, pVector, pResult, threads_for_calc[i]); // вызываем метод объекта - получаем услугу у друга	
+		finishTime = omp_get_wtime(); // останавливаем таймер, от полученного времени убавляем время старта, чтобы получить потраченнное время 
+		printf("\nJumsalgan uakit: %f second, method: %s, threads count: %d", finishTime - startTime, "Gauss parallel", threads_for_calc[i]);		
+		matrixHelpers::testSolvingResult(originalA, originalB, pResult, mSize);//Нәтижені тексеру
 		Sleep(600);
+
 	}
-
-
-	pMatrix = originalA;
-	pVector = originalB;
-	pResult = new double[mSize];
+	pMatrix = originalA;//Присваиваем сгенерированную матрицу А 
+	pVector = originalB;//Присваиваем сгенерированную вектор В
+	pResult = new double[mSize];// Обнуляем вектор решений 
+	startTime = omp_get_wtime(); //запускаем таймер
 	// CG сызықты алгоритмі
-	//Уақытты өлшеу
-	startTime = omp_get_wtime();
 	CGSerialSolver = new CGSerial();
 	CGSerialSolver->resultCalculation(pMatrix, pVector, pResult, mSize);
-	//Жұмсалған уақыт
-	finishTime = omp_get_wtime();
-	printf("\nJumsalgan uakit: %f second, method: %s", finishTime - startTime, "CG serial ");
-	//CG әдісінің бірі болса, онда қайталанулар санын көрсету керек
-	printf("iteration sani: %d", CGSerialSolver->iterationsCount);
-	//Нәтижені тексеру
-	matrixHelpers::testSolvingResult(originalA, originalB, pResult, mSize);
+	finishTime = omp_get_wtime(); // останавливаем таймер, от полученного времени убавляем время старта, чтобы получить потраченнное время 
+	printf("\nJumsalgan uakit: %f second, method: %s", finishTime - startTime, "CG serial ");	
+	printf("iteration sani: %d", CGSerialSolver->iterationsCount); //CG әдісінің бірі болса, онда қайталанулар санын көрсетеміз
+	matrixHelpers::testSolvingResult(originalA, originalB, pResult, mSize);//Нәтижені тексеру
 	Sleep(600);
 
 	for (int i = 0; i < experiment_count; i++) {
+		pMatrix = originalA;//Присваиваем сгенерированную матрицу А 
+		pVector = originalB;//Присваиваем сгенерированную вектор В
+		pResult = new double[mSize];// Обнуляем вектор решений 
+		startTime = omp_get_wtime(); //запускаем таймер
+
 		// CG параллель алгоритмі threads[i] поток
-		//Уақытты өлшеу
-		pMatrix = originalA;
-		pVector = originalB;
-		pResult = new double[mSize];
-		startTime = omp_get_wtime();
 		CGParallelSolver = new CGParallel();
 		CGParallelSolver->resultCalculation(pMatrix, pVector, pResult, mSize, threads_for_calc[i]);
-		//Жұмсалған уақыт
-		finishTime = omp_get_wtime();
-		printf("\nJumsalgan uakit: %f second, method: %s, threads count: %d", finishTime - startTime, "CG parallel", threads_for_calc[i]);
-		//CG әдісінің бірі болса, онда қайталанулар санын көрсету керек
-		printf(", iteration sani: %d", CGParallelSolver->iterationsCount);
-		//Нәтижені тексеру
-		matrixHelpers::testSolvingResult(originalA, originalB, pResult, mSize);
+		finishTime = omp_get_wtime(); // останавливаем таймер, от полученного времени убавляем время старта, чтобы получить потраченнное время
+		printf("\nJumsalgan uakit: %f second, method: %s, threads count: %d", finishTime - startTime, "CG parallel", threads_for_calc[i]);		
+		printf(", iteration sani: %d", CGParallelSolver->iterationsCount); //CG әдісінің бірі болса, онда қайталанулар санын көрсетеміз
+		matrixHelpers::testSolvingResult(originalA, originalB, pResult, mSize);//Нәтижені тексеру
 		Sleep(600);
 	}
 
