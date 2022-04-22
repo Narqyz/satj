@@ -14,7 +14,6 @@ gaussSerial::gaussSerial(int size) {
 
 
 int gaussSerial::resultCalculation(double** pMatrix, double* pVector, double* pResult) {
-
 	// Тура жүріс, айнымалыларды Гаусс бойынша жою
 	serialGaussianElimination(pMatrix, pVector);
 	// Кері жүріс, айнымалыларды есептеу
@@ -41,7 +40,6 @@ int gaussSerial::serialGaussianElimination(double** pMatrix, double* pVector) {
 	}
 	return 0;
 }
-
 
  // Жиынтық жолды табуға арналған функция
 int gaussSerial::findPivotRow(double** pMatrix, int Iter) {
@@ -74,8 +72,6 @@ int gaussSerial::serialColumnElimination(double** pMatrix, double* pVector, int 
 	}
 	return 0;
 }
-
-
 
 // Кері жүріс
 int gaussSerial::serialBackSubstitution(double** pMatrix, double* pVector, double* pResult) {

@@ -19,6 +19,7 @@ void CGParallel::resultCalculation(double** pMatrix, double* pVector, double* pR
 	CurrentDirection = new double[Size];
 	PreviousDirection = new double[Size];
 	Denom = new double[Size];
+	double CurrentGradient_sum = 0, PreviousGradient_sum = 0;
 	// Бастапқы мәндерді енгізіп қою
 	for (int i = 0; i < Size; i++) {
 		PreviousApproximation[i] = 0;
@@ -36,67 +37,50 @@ void CGParallel::resultCalculation(double** pMatrix, double* pVector, double* pR
 			tempPointer = PreviousDirection;
 			PreviousDirection = CurrentDirection;
 			CurrentDirection = tempPointer;
+			PreviousGradient_sum = CurrentGradient_sum;
+			CurrentGradient_sum = 0;
 		}
 
 		// Градиентті есептеу
-#pragma omp parallel for
+#pragma omp parallel for reduction(+:CurrentGradient_sum)
 		for (int i = 0; i < Size; i++) {
 			CurrentGradient[i] = -pVector[i];
-			for (int j = 0; j < Size; j++)
+			for (int j = 0; j < Size; j++) {
 				CurrentGradient[i] += pMatrix[i][j] * PreviousApproximation[j];
-		}
-		double IP1 = 0, IP2 = 0;
-
-		// Бөлушектің алымы мен бөлімін алдын ала есептеп аламыз
-#pragma omp parallel for reduction(+:IP1,IP2)
-		for (int i = 0; i < Size; i++) {
-			IP1 += CurrentGradient[i] * CurrentGradient[i]; // алымы
-			IP2 += PreviousGradient[i] * PreviousGradient[i]; // бөлімі
+			}
+			CurrentGradient_sum += CurrentGradient[i] * CurrentGradient[i];  // (new_g^T, new_g) алымы
 		}
 
 		// Бағыттауыш векторды есептеу
 #pragma omp parallel for
 		for (int i = 0; i < Size; i++) {
-			CurrentDirection[i] = -CurrentGradient[i] +
-				PreviousDirection[i] * IP1 / IP2;
+			CurrentDirection[i] = -CurrentGradient[i] +	PreviousDirection[i] * CurrentGradient_sum / PreviousGradient_sum;
 		}
-		IP1 = 0;		IP2 = 0;
+
+		double ip1 = 0;
 		// Бөлушектің алымы мен бөлімін алдын ала есептеп аламыз
-#pragma omp parallel for reduction(+:IP1,IP2)
+#pragma omp parallel for reduction(+:ip1)
 		for (int i = 0; i < Size; i++) {
 			Denom[i] = 0;
 			for (int j = 0; j < Size; j++)
 				Denom[i] += pMatrix[i][j] * CurrentDirection[j];
-			IP1 += CurrentDirection[i] * CurrentGradient[i];
-			IP2 += CurrentDirection[i] * Denom[i];
+			ip1 += CurrentDirection[i] * Denom[i];
 		}
 		// Қадам шамасын есептейміз
-		Step = -IP1 / IP2;
+		Step = CurrentGradient_sum / ip1;
 		// Жаңа шешімді есептейміз
 #pragma omp parallel for
 		for (int i = 0; i < Size; i++) {
 			CurrentApproximation[i] = PreviousApproximation[i] + Step * CurrentDirection[i];
 		}
 		Iter++;
-	} while /* алдыңғы шешім мен жаңа шешім айырмасын есептейміз  
+	} while /* градиенттің үлкендігін тексереміз  
 			* егер ол қателіктен Accuracy үлкен болса
 			* және қайталау саны массив өлшемінен кіші болса
 			* жаңа градиент, бағыт, қадам есептейміз
 			*/
-		((diff(PreviousApproximation, CurrentApproximation, Size) > Accuracy)
-			&& (Iter < MaxIter));
+		(CurrentGradient_sum > Accuracy	&& Iter < MaxIter);
 	for (int i = 0; i < Size; i++)
 		pResult[i] = CurrentApproximation[i];
 	iterationsCount = Iter;
-}
-
-// алдыңғы шешім мен жаңа шешім айырмасын есептейміз
-double CGParallel::diff(double *vector1, double* vector2, int Size) {
-	double sum = 0;
-#pragma omp parallel for reduction(+:sum)
-	for (int i = 0; i < Size; i++) {
-		sum += fabs(vector1[i] - vector2[i]);
-	}
-
-	return sum;
 }

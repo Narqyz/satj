@@ -13,7 +13,7 @@ int matrixHelpers::testSolvingResult(double** pMatrix, double* pVector, double* 
 	double* pRightPartVector;
 	// Flag, that shows wheather the right parts vectors are identical or not
 	int equal = 0;
-	double Accuracy = 1.e-2; // Comparison accuracy
+	double Accuracy = 0.0001f; // Comparison accuracy
 	pRightPartVector = new double[Size];
 	for (int i = 0; i < Size; i++) {
 		pRightPartVector[i] = 0;
@@ -27,10 +27,10 @@ int matrixHelpers::testSolvingResult(double** pMatrix, double* pVector, double* 
 		}
 	}
 	if (equal == 1) {
-		printf("Result is NOT correct. Check your code.\n");
+		printf(" Wrong.");
 	}
 	else {
-		//printf("The result of the algorithm is correct.\n");
+		//printf(" Ñorrect.");
 	}
 
 	delete[] pRightPartVector;
