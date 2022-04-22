@@ -8,54 +8,46 @@
 gaussParallel::gaussParallel(int size) {
 	mSize = size;
 
-	pSerialPivotIter = new int[size];
-	pSerialPivotPos = new int[size];
-	//Бұл жолдарға әлі кірмегенімізді көрсету үшін -1 толтырамыз
+	pSerialPivotIter = new int[size]; // хранить в каком цикле стал главным определенная строка, нужен для прямого хода
+	pSerialPivotPos = new int[size]; // хранить порядок строк по итерации, нужен для обратного хода	
 	for (int i = 0; i < size; i++) {
-		pSerialPivotIter[i] = -1;
+		pSerialPivotIter[i] = -1; // Бұл жолдарға әлі кірмегенімізді көрсету үшін -1 толтырамыз
 	}
 }
 
 int gaussParallel::resultCalculation(double** pMatrix, double* pVector, double* pResult, int threads_count) {
-	omp_set_num_threads(threads_count); // устанавливаем количество потоков в "параллельных" блоках 
-	// Тура жүріс, айнымалыларды Гаусс бойынша жою
-	gaussianElimination(pMatrix, pVector);
-	// Кері жүріс, айнымалыларды есептеу
-	backSubstitution(pMatrix, pVector, pResult);
+	omp_set_num_threads(threads_count); // устанавливаем количество потоков в "параллельных" блоках 	
+	gaussianElimination(pMatrix, pVector); // Тура жүріс, айнымалыларды Гаусс бойынша жою	
+	backSubstitution(pMatrix, pVector, pResult); // Кері жүріс, айнымалыларды есептеу
 	return 0;
 }
 
 
 // Тура жүріс, айнымалыларды Гаусс бойынша жою
 int gaussParallel::gaussianElimination(double** pMatrix, double* pVector) {
-	int Iter;
-	// Гаусс итерациясының саны
-	// жою
-	int PivotRow;
-	// Ағымдағы айналмалы жолдың саны
+	int Iter; // Гаусс итерациясының саны	
+	int PivotRow; // басты жол нөмірі
 	for (Iter = 0; Iter < mSize; Iter++) {
-		//Айналмалы жолды табу
-		PivotRow = findPivotRow(pMatrix, Iter);
-		pSerialPivotPos[Iter] = PivotRow;
-		pSerialPivotIter[PivotRow] = Iter;
-		// Бағанның басқа элементтерін жою
-		columnElimination(pMatrix, pVector, PivotRow, Iter);
+		PivotRow = findPivotRow(pMatrix, Iter); // бағандағы макс табу
+		pSerialPivotPos[Iter] = PivotRow; // хранить порядок строк по итерации, нужен для обратного хода
+		pSerialPivotIter[PivotRow] = Iter; // хранить в каком цикле стал главным определенная строка, нужен для прямого хода		
+		columnElimination(pMatrix, pVector, PivotRow, Iter); // Бағанның басқа элементтерін жою
 	}
 	return 0;
 }
 
-// Жиынтық жолды табуға арналған функция
+// Iter бағаны үшін макс элементті жолды таңдау жолды табу
 int gaussParallel::findPivotRow(double** pMatrix, int Iter) {
-	int PivotRow = -1; // Жиынтық жолдың индексі
-	double MaxValue = 0; // Жиынтық элементтің мәні
+	double MaxValue = 0; // бағандағы макс элементтің мәні
+	int PivotRow = -1; // бағандағы макс элементті жолдың индексі
 	int i; // цикл айнымалысы
-	// Ең көп элементті сақтайтын жолды таңдаңыз
 #pragma omp parallel
 	{
 		TThreadPivotRow ThreadPivotRow;
-		ThreadPivotRow.MaxValue = 0;
-		ThreadPivotRow.PivotRow = -1;
+		ThreadPivotRow.MaxValue = 0; //задаем макс переменные каждому потоку
+		ThreadPivotRow.PivotRow = -1; //задаем ид строки со макс значением каждому потоку
 
+	// жолдар бойынша макс іздеу және ол жол алдын қолданылмаған болу керек
 #pragma omp for
 		for (i = 0; i < mSize; i++) {
 			if ((pSerialPivotIter[i] == -1) && (fabs(pMatrix[i][Iter]) > ThreadPivotRow.MaxValue)) {
@@ -63,8 +55,7 @@ int gaussParallel::findPivotRow(double** pMatrix, int Iter) {
 				ThreadPivotRow.MaxValue = fabs(pMatrix[i][Iter]);
 			}
 		}
-
-#pragma omp critical
+#pragma omp critical // әр поток үшін 1 рет қана жүретінін көрсету
 		{
 			if (ThreadPivotRow.MaxValue > MaxValue) {
 				MaxValue = ThreadPivotRow.MaxValue;
@@ -81,7 +72,7 @@ int gaussParallel::findPivotRow(double** pMatrix, int Iter) {
 int gaussParallel::columnElimination(double** pMatrix, double* pVector, int Pivot, int Iter) {
 	double PivotValue, PivotFactor;
 	PivotValue = pMatrix[Pivot][Iter];
-#pragma omp parallel for private (PivotFactor) schedule(dynamic,1)
+#pragma omp parallel for private (PivotFactor) schedule(dynamic,1) // әр потокта өзінің PivotFactor бар, әр поток бос болса 1-ақ блок жұмыс істеуге алады. ол нагрузканы бөлуге көмектеседі
 	for (int i = 0; i < mSize; i++) {
 		if (pSerialPivotIter[i] == -1) {
 			PivotFactor = pMatrix[i][Iter] / PivotValue;
@@ -96,17 +87,15 @@ int gaussParallel::columnElimination(double** pMatrix, double* pVector, int Pivo
 
 // Кері жүріс
 int gaussParallel::backSubstitution(double** pMatrix, double* pVector, double* pResult) {
-	int RowIndex, Row;
+	int RowIndex;
+	double res;
 	for (int i = mSize - 1; i >= 0; i--) {
 		RowIndex = pSerialPivotPos[i];
 		pResult[i] = pVector[RowIndex] / pMatrix[RowIndex][i];
-#pragma omp parallel for private (Row)
-		for (int j = 0; j < i; j++) {
-			Row = pSerialPivotPos[j];
-			pVector[j] -= pMatrix[Row][i] * pResult[i];
-			pMatrix[Row][i] = 0;
+#pragma omp parallel for reduction(-:pResult[i])
+		for (int j = i + 1; j < mSize; j++) {
+			pResult[i] -= pMatrix[RowIndex][j] * pResult[j] / pMatrix[RowIndex][i];
 		}
 	}
-
 	return 0;
 }
