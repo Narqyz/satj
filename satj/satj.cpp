@@ -21,6 +21,7 @@ int main(){
 	int mSize;
 	printf("Enter matrix size \n");
 	std::cin >> mSize;
+	// эксперимент кезінде қандай потоктар санын қолдансын массиві
 	int threads_for_calc[] = {2, 4, 8, 16, 32};
 	int experiment_count = sizeof(threads_for_calc) / sizeof(threads_for_calc[0]);
 
