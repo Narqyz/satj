@@ -21,25 +21,20 @@ void CGParallel::resultCalculation(double** pMatrix, double* pVector, double* pR
 	Denom = new double[Size];
 	double CurrentGradient_sum = 0, PreviousGradient_sum = 0;
 	// Бастапқы мәндерді енгізіп қою
+
+#pragma omp parallel for reduction(+:CurrentGradient_sum)
 	for (int i = 0; i < Size; i++) {
-		PreviousApproximation[i] = 0;
-		PreviousDirection[i] = 0;
-		PreviousGradient[i] = -pVector[i];
+		CurrentApproximation[i] = 0;
+		CurrentDirection[i] = 0;
+		CurrentGradient[i] = -pVector[i];
+		CurrentGradient_sum += CurrentGradient[i] * CurrentGradient[i];
 	}
 	do {
-		if (Iter > 1) {
-			tempPointer = PreviousApproximation;
-			PreviousApproximation = CurrentApproximation;
-			CurrentApproximation = tempPointer;
-			tempPointer = PreviousGradient;
-			PreviousGradient = CurrentGradient;
-			CurrentGradient = tempPointer;
-			tempPointer = PreviousDirection;
-			PreviousDirection = CurrentDirection;
-			CurrentDirection = tempPointer;
-			PreviousGradient_sum = CurrentGradient_sum;
-			CurrentGradient_sum = 0;
-		}
+		PreviousApproximation = CurrentApproximation;
+		PreviousGradient = CurrentGradient;
+		PreviousDirection = CurrentDirection;
+		PreviousGradient_sum = CurrentGradient_sum;
+		CurrentGradient_sum = 0;
 
 		// Градиентті есептеу
 #pragma omp parallel for reduction(+:CurrentGradient_sum)
@@ -74,6 +69,7 @@ void CGParallel::resultCalculation(double** pMatrix, double* pVector, double* pR
 			CurrentApproximation[i] = PreviousApproximation[i] + Step * CurrentDirection[i];
 		}
 		Iter++;
+
 	} while /* градиенттің үлкендігін тексереміз  
 			* егер ол қателіктен Accuracy үлкен болса
 			* және қайталау саны массив өлшемінен кіші болса

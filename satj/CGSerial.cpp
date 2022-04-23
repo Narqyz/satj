@@ -4,10 +4,10 @@
 
 
 void CGSerial::resultCalculation(double** pMatrix, double* pVector, double* pResult, int Size) {
-	double *CurrentApproximation, *PreviousApproximation;
-	double *CurrentGradient, *PreviousGradient;
-	double *CurrentDirection, *PreviousDirection;
-	double *Denom, *tempPointer;
+	double* CurrentApproximation, * PreviousApproximation;
+	double* CurrentGradient, * PreviousGradient;
+	double* CurrentDirection, * PreviousDirection;
+	double* Denom, * tempPointer;
 	double Step;
 	int Iter = 1, MaxIter = Size + 1;
 	float Accuracy = 0.00001f; //шешім қателігі
@@ -21,24 +21,17 @@ void CGSerial::resultCalculation(double** pMatrix, double* pVector, double* pRes
 	double CurrentGradient_sum = 0, PreviousGradient_sum = 0;
 	// Бастапқы мәндерді енгізіп қою
 	for (int i = 0; i < Size; i++) {
-		PreviousApproximation[i] = 0;
-		PreviousDirection[i] = 0;
-		PreviousGradient[i] = -pVector[i];
+		CurrentApproximation[i] = 0;
+		CurrentDirection[i] = 0;
+		CurrentGradient[i] = -pVector[i];
+		CurrentGradient_sum += CurrentGradient[i] * CurrentGradient[i];
 	}
 	do {
-		if (Iter > 1) {
-			tempPointer = PreviousApproximation;
-			PreviousApproximation = CurrentApproximation;
-			CurrentApproximation = tempPointer;
-			tempPointer = PreviousGradient;
-			PreviousGradient = CurrentGradient;
-			CurrentGradient = tempPointer;
-			tempPointer = PreviousDirection;
-			PreviousDirection = CurrentDirection;
-			CurrentDirection = tempPointer;
-			PreviousGradient_sum = CurrentGradient_sum;
-			CurrentGradient_sum = 0;
-		}
+		PreviousApproximation = CurrentApproximation;
+		PreviousGradient = CurrentGradient;
+		PreviousDirection = CurrentDirection;
+		PreviousGradient_sum = CurrentGradient_sum;
+		CurrentGradient_sum = 0;
 		// Градиентті есептеу
 
 		// Бөлушектің алымы мен бөлімін алдын ала есептеп аламыз
@@ -69,21 +62,13 @@ void CGSerial::resultCalculation(double** pMatrix, double* pVector, double* pRes
 			CurrentApproximation[i] = PreviousApproximation[i] + Step * CurrentDirection[i];
 		}
 		Iter++;
-	} while /* градиенттің үлкендігін тексереміз 
+	} while /* градиенттің үлкендігін тексереміз
 			* егер ол қателіктен Accuracy үлкен болса
 			* және қайталау саны массив өлшемінен кіші болса
 			* жаңа градиент, бағыт, қадам есептейміз
 			*/
-		(diff(PreviousApproximation, CurrentApproximation, Size) >= Accuracy && Iter < MaxIter);
+		(CurrentGradient_sum >= Accuracy && Iter < MaxIter);
 	for (int i = 0; i < Size; i++)
 		pResult[i] = CurrentApproximation[i];
 	iterationsCount = Iter;
-}
-// алдыңғы шешім мен жаңа шешім айырмасын есептейміз
-double CGSerial::diff(double* vector1, double* vector2, int Size) {
-	double sum = 0;
-	for (int i = 0; i < Size; i++) {
-		sum += fabs(vector1[i] - vector2[i]);
-	}
-	return sum;
 }

@@ -1,6 +1,7 @@
 ﻿#include "gaussSerial.h"
 #include "math.h"
 #include "stdio.h"
+#include "matrixHelpers.h"
 
 gaussSerial::gaussSerial(int size) {
 	mSize = size;
@@ -28,6 +29,7 @@ int gaussSerial::serialGaussianElimination(double** pMatrix, double* pVector) {
 		PivotRow = findPivotRow(pMatrix, Iter); //жетекші жолды максимумы бойынша анықтау жолды табу
 		pSerialPivotPos[Iter] = PivotRow; // хранить порядок строк по итерации, нужен для обратного хода
 		pSerialPivotIter[PivotRow] = Iter; // хранить в каком цикле стал главным определенная строка, нужен для прямого хода
+
 		serialColumnElimination(pMatrix, pVector, PivotRow, Iter);
 	}
 	return 0;
@@ -40,10 +42,11 @@ int gaussSerial::findPivotRow(double** pMatrix, int Iter) {
 	int i; // цикл айнымалысы
 	// жолдар бойынша макс іздеу және ол жол алдын қолданылмаған болу керек
 	for (i = 0; i < mSize; i++) {
-		if ((pSerialPivotIter[i] == -1) && (fabs(pMatrix[i][Iter]) > MaxValue)) {
+		if ((pSerialPivotIter[i] == -1) && (fabs(pMatrix[i][Iter]) >= MaxValue)) {
 			PivotRow = i;
 			MaxValue = fabs(pMatrix[i][Iter]);
 		}
+
 	}
 	return PivotRow;
 }
