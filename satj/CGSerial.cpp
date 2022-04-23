@@ -7,7 +7,7 @@ void CGSerial::resultCalculation(double** pMatrix, double* pVector, double* pRes
 	double* CurrentApproximation, * PreviousApproximation;
 	double* CurrentGradient, * PreviousGradient;
 	double* CurrentDirection, * PreviousDirection;
-	double* Denom, * tempPointer;
+	double* Denom;
 	double Step;
 	int Iter = 1, MaxIter = Size + 1;
 	float Accuracy = 0.00001f; //шешім қателігі
@@ -27,6 +27,7 @@ void CGSerial::resultCalculation(double** pMatrix, double* pVector, double* pRes
 		CurrentGradient_sum += CurrentGradient[i] * CurrentGradient[i];
 	}
 	do {
+		printf("\n CurrentApproximation[0] = %f", CurrentApproximation[0]);
 		PreviousApproximation = CurrentApproximation;
 		PreviousGradient = CurrentGradient;
 		PreviousDirection = CurrentDirection;
