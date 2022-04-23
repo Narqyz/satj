@@ -61,11 +61,3 @@ void matrixHelpers::printMatrix(double** matrix, int size) {
 	}
 	printf("\n");
 }
-void matrixHelpers::copyMatrix(double** from,double** to, double* fromb, double* tob, int size) {
-	for (int i = 0; i < size; i++) {
-		for (int j = i; j < size; j++) {
-			to[i][j] = to[j][i] = from[i][j];
-		}
-		tob[i] = fromb[i];
-	}
-}
