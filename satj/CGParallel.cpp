@@ -36,12 +36,13 @@ void CGParallel::resultCalculation(double** pMatrix, double* pVector, double* pR
 
 		// 1 этап вычисление alpha
 
-#pragma omp parallel for lastprivate(A_prev_z[i]) reduction(+:ip)
+#pragma omp parallel for reduction(+:ip)
 		for (int i = 0; i < Size; i++) {
 			A_prev_z[i] = 0;
 			for (int j = 0; j < Size; j++) {
 				A_prev_z[i] += pMatrix[i][j] * prev_z[j];
 			}
+
 			ip += A_prev_z[i] * prev_z[i];  //  бөлімі
 		}
 		alpha = sum_prev_r / ip;
