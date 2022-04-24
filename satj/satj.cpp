@@ -20,10 +20,10 @@ using namespace std;
 
 
 int main() {
-	int m = omp_get_max_threads();
+	int m = omp_get_max_threads();  // тут макс потоков
 	printf("Max threads count = %d", m);
-	int threads_array[] = { 1, 2, 4, 8, 12 };
-	for (int mSize = 1000; mSize < 10000; mSize += 1000) {
+	int threads_array[] = { 1, 2, 4, 8, 12 }; // тут количество потоков
+	for (int mSize = 1000; mSize < 5000; mSize += 1000) { // тут размер матриц 
 		cout << "\n Matrix size = " << mSize;
 		double** originalA, ** pMatrix; //Коэффицент матрицасы (екі өлшемді)
 		double* originalB, * pVector; //Сызықтық жүйенің оң жағы

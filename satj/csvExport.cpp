@@ -5,7 +5,7 @@
 #include "string.h"
 using namespace std;
 
-int csvExport::writeGauss(int Size, const char *times) {
+int csvExport::writeGauss(int Size, const char *times) { // метод записи результатов в файл
     std::ofstream myfile;
     myfile.open("result.csv");
     myfile << "Размер;Гаусс линейно;Гаусс параллель(1);Гаусс параллель(2);Гаусс параллель(4);Гаусс параллель(8);Гаусс параллель(12);";
