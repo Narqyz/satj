@@ -153,6 +153,7 @@
   <ItemGroup>
     <ClCompile Include="CGParallel.cpp" />
     <ClCompile Include="CGSerial.cpp" />
+    <ClCompile Include="csvExport.cpp" />
     <ClCompile Include="dataGen.cpp" />
     <ClCompile Include="gaussParallel.cpp" />
     <ClCompile Include="gaussSerial.cpp" />
@@ -162,6 +163,7 @@
   <ItemGroup>
     <ClInclude Include="CGParallel.h" />
     <ClInclude Include="CGSerial.h" />
+    <ClInclude Include="csvExport.h" />
     <ClInclude Include="dataGen.h" />
     <ClInclude Include="gaussParallel.h" />
     <ClInclude Include="gaussSerial.h" />

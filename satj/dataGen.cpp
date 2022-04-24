@@ -12,7 +12,9 @@ int dataGen::randomDataInitialization(double** pMatrix, double* pVector, int Siz
 	for (i = 0; i < Size; i++) {
 		pVector[i] = (double)rand();
 		for (j = 0; j < Size; j++) {
-			pMatrix[i][j] = pMatrix[j][i] = (double)rand();
+			double tmp = (double)rand();
+			if (tmp < 0) tmp *= -1;
+			pMatrix[i][j] = pMatrix[j][i] = tmp;
 		}
 	}
 	return 0;
