@@ -26,7 +26,7 @@ int main() {
 	int m = sizeof(threads_array) / sizeof(threads_array[0]);
 	csvExport::write(threads_array, m);
 
-	for (int mSize = 1000; mSize < 5000; mSize += 1000) { // тут размер матриц 
+	for (int mSize = 100; mSize <= 1000; mSize += 100) { // тут размер матриц 
 		cout << "\n Matrix size = " << mSize;
 		double** originalA, ** pMatrix; //Коэффицент матрицасы (екі өлшемді)
 		double* originalB, * pVector; //Сызықтық жүйенің оң жағы
@@ -94,6 +94,9 @@ int main() {
 		if (!matrixHelpers::checkSymmetrical(pMatrix, mSize)) {
 			printf("\n Matrix is not symmetrical");
 			matrixHelpers::printMatrix(originalA, mSize);
+		} else if(!matrixHelpers::checkPositiveDefinite(pMatrix, mSize)) {
+			printf("\n Matrix is not Positive Definite");
+			matrixHelpers::printMatrix(originalA, mSize);
 		}
 		else {
 			startTime = omp_get_wtime(); //запускаем таймер
@@ -125,6 +128,7 @@ int main() {
 				matrixHelpers::testSolvingResult(originalA, originalB, pResult, mSize);//Нәтижені тексеру
 			}
 		}
+		csvExport::replaceAll(times,".", ",");
 		const char* ti = times.c_str();
 		csvExport::addTimes(mSize, ti);
 	}

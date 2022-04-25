@@ -44,6 +44,10 @@ bool matrixHelpers::checkSymmetrical(double** pMatrix, int Size) {
 	}
 	return true;
 }
+bool matrixHelpers::checkPositiveDefinite(double** pMatrix, int Size)
+{
+	return true;
+}
 void matrixHelpers::printVector(double* matrix, int size) {
 
 	for (int i = 0; i < size; i++) {
