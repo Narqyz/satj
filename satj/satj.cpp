@@ -1,5 +1,4 @@
 ﻿// satj.cpp : Этот файл содержит функцию "main". Здесь начинается и заканчивается выполнение программы.
-//
 
 #include <iostream>
 #include <cstdlib>
@@ -18,9 +17,7 @@
 #include <string>
 using namespace std;
 
-
 int main() {
-
 	printf("Max threads count = %d", omp_get_max_threads());
 	int threads_array[] = { 2, 4, 8, 12 }; // тут количество потоков
 	int m = sizeof(threads_array) / sizeof(threads_array[0]);
@@ -43,8 +40,7 @@ int main() {
 			pMatrix[i] = new double[mSize];
 		}
 
-		//Деректерді генерациялау, pMatrix пен pVector кездейсоқ сандармен толтыру
-		dataGen::randomDataInitialization(originalA, originalB, mSize);
+		dataGen::randomDataInitialization(originalA, originalB, mSize);		//Деректерді генерациялау, pMatrix пен pVector кездейсоқ сандармен толтыру
 
 		//Объекты бәрін құрастырамыз
 		gaussSerial* gaussSerialSolver;
@@ -59,9 +55,8 @@ int main() {
 		}
 
 		double startTime = omp_get_wtime(); //запускаем таймер
-		// Гаусс сызықты алгоритмі
-		gaussSerialSolver = new gaussSerial(mSize);
-		gaussSerialSolver->resultCalculation(pMatrix, pVector, pResult);
+		gaussSerialSolver = new gaussSerial(mSize);  	// Гаусс сызықты алгоритмі
+		gaussSerialSolver->resultCalculation(pMatrix, pVector, pResult); // вызываем метод объекта - получаем услугу у друга
 		double finishTime = omp_get_wtime();  // останавливаем таймер, от полученного времени убавляем время старта, чтобы получить потраченнное время
 		printf("\nTime: %f second, method: %s, pResult[0]= %f", finishTime - startTime, "Gauss serial", pResult[0]);
 		times += to_string(finishTime - startTime);
@@ -75,15 +70,13 @@ int main() {
 			}
 			pResult = new double[mSize];// Обнуляем вектор решений 
 			startTime = omp_get_wtime(); //запускаем таймер
-			// Гаусс параллель алгоритмі threads[i] поток
 			gaussParallelSolver = new gaussParallel(mSize);// создаем объект - добавляем в друзья
-			gaussParallelSolver->resultCalculation(pMatrix, pVector, pResult, threads_array[i]); // вызываем метод объекта - получаем услугу у друга	
+			gaussParallelSolver->resultCalculation(pMatrix, pVector, pResult, threads_array[i]); // Гаусс параллель алгоритмі threads[i] поток
 			finishTime = omp_get_wtime(); // останавливаем таймер, от полученного времени убавляем время старта, чтобы получить потраченнное время 
 			printf("\nTime: %f second, method: %s, threads count: %d, pResult[0]= %f", finishTime - startTime, "Gauss parallel", threads_array[i], pResult[0]);
 			times += ";";
 			times += to_string(finishTime - startTime);
 			matrixHelpers::testSolvingResult(originalA, originalB, pResult, mSize);//Нәтижені тексеру
-
 		}
 		for (int i = 0; i < mSize; i++) {
 			for (int j = 0; j < mSize; j++)
@@ -97,12 +90,10 @@ int main() {
 		} else if(!matrixHelpers::checkPositiveDefinite(pMatrix, mSize)) {
 			printf("\n Matrix is not Positive Definite");
 			matrixHelpers::printMatrix(originalA, mSize);
-		}
-		else {
+		} else {
 			startTime = omp_get_wtime(); //запускаем таймер
-			// CG сызықты алгоритмі
-			CGSerialSolver = new CGSerial();
-			CGSerialSolver->resultCalculation(pMatrix, pVector, pResult, mSize);
+			CGSerialSolver = new CGSerial();  // CG сызықты алгоритмі
+			CGSerialSolver->resultCalculation(pMatrix, pVector, pResult, mSize);  
 			finishTime = omp_get_wtime(); // останавливаем таймер, от полученного времени убавляем время старта, чтобы получить потраченнное время 
 			printf("\nTime: %f second, method: %s, pResult[0]= %f", finishTime - startTime, "CG serial ", pResult[0]);
 			times += ";";
@@ -117,8 +108,7 @@ int main() {
 				}
 				pResult = new double[mSize];// Обнуляем вектор решений 
 				startTime = omp_get_wtime(); //запускаем таймер
-				// CG параллель алгоритмі threads[i] поток
-				CGParallelSolver = new CGParallel();
+				CGParallelSolver = new CGParallel();  // CG параллель алгоритмі threads[i] поток
 				CGParallelSolver->resultCalculation(pMatrix, pVector, pResult, mSize, threads_array[i]);
 				finishTime = omp_get_wtime(); // останавливаем таймер, от полученного времени убавляем время старта, чтобы получить потраченнное время
 				printf("\nTime: %f second, method: %s, threads count: %d, pResult[0]= %f", finishTime - startTime, "CG parallel", threads_array[i], pResult[0]);
