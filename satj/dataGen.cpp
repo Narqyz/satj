@@ -10,11 +10,9 @@ int dataGen::randomDataInitialization(double** pMatrix, double* pVector, int Siz
 
 	srand(unsigned(clock()));
 	for (i = 0; i < Size; i++) {
-		pVector[i] = (double)rand();
+		pVector[i] = (double)rand() / RAND_MAX;
 		for (j = 0; j < Size; j++) {
-			double tmp = (double)rand();
-			if (tmp < 0) tmp *= -1;
-			pMatrix[i][j] = pMatrix[j][i] = tmp;
+			pMatrix[i][j] = pMatrix[j][i] = (double)rand() / RAND_MAX;
 		}
 	}
 	return 0;

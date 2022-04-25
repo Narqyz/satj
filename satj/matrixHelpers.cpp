@@ -2,6 +2,7 @@
 #include "stdio.h"
 #include "math.h"
 #include <vcruntime_string.h>
+#include <omp.h>
 
 
 /**
@@ -13,21 +14,24 @@ int matrixHelpers::testSolvingResult(double** pMatrix, double* pVector, double* 
 	of the linear system matrix by the vector of unknowns */
 	double* pRightPartVector;
 	// Flag, that shows wheather the right parts vectors are identical or not
-	int equal = 0;
+	int equal = 0, i, j;
 	double Accuracy = 0.01f; // Comparison accuracy
-	pRightPartVector = new double[Size];	
-	for (int i = 0; i < Size; i++) {
+	pRightPartVector = new double[Size];
+
+	for (i = 0; i < Size; i++) {
 		pRightPartVector[i] = 0;
-		for (int j = 0; j < Size; j++) {
+		for (j = 0; j < Size; j++) {
 			pRightPartVector[i] += pMatrix[i][j] * pResult[j];
 		}
 	}
-	for (int i = 0; i < Size; i++) {
+
+#pragma omp parallel for reduction(+:equal)
+	for (i = 0; i < Size; i++) {
 		if (fabs(pRightPartVector[i] - pVector[i]) > Accuracy) {
-			equal = 1;
+			equal++;
 		}
 	}
-	if (equal == 1) {
+	if (equal > 1) {
 		printf(" Wrong.");
 	}
 	else {

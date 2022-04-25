@@ -2,6 +2,7 @@
 #include "math.h"
 #include "stdio.h"
 #include "matrixHelpers.h"
+#include <iostream>
 
 gaussSerial::gaussSerial(int size) {
 	mSize = size;
