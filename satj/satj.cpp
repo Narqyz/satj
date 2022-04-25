@@ -20,9 +20,12 @@ using namespace std;
 
 
 int main() {
-	int m = omp_get_max_threads();  // тут макс потоков
-	printf("Max threads count = %d", m);
-	int threads_array[] = { 1, 2, 4, 8, 12 }; // тут количество потоков
+
+	printf("Max threads count = %d", omp_get_max_threads());
+	int threads_array[] = { 2, 4, 8, 12 }; // тут количество потоков
+	int m = sizeof(threads_array) / sizeof(threads_array[0]);
+	csvExport::write(threads_array, m);
+
 	for (int mSize = 1000; mSize < 5000; mSize += 1000) { // тут размер матриц 
 		cout << "\n Matrix size = " << mSize;
 		double** originalA, ** pMatrix; //Коэффицент матрицасы (екі өлшемді)
@@ -64,7 +67,7 @@ int main() {
 		times += to_string(finishTime - startTime);
 		matrixHelpers::testSolvingResult(originalA, originalB, pResult, mSize);	//Нәтижені тексеру
 
-		for (int i = 0; i < 5; i++) {
+		for (int i = 0; i < m; i++) {
 			for (int i = 0; i < mSize; i++) {
 				for (int j = 0; j < mSize; j++)
 					pMatrix[i][j] = pMatrix[j][i] = originalA[i][j];
@@ -74,7 +77,7 @@ int main() {
 			startTime = omp_get_wtime(); //запускаем таймер
 			// Гаусс параллель алгоритмі threads[i] поток
 			gaussParallelSolver = new gaussParallel(mSize);// создаем объект - добавляем в друзья
-			gaussParallelSolver->resultCalculation(pMatrix, pVector, pResult, i + 1); // вызываем метод объекта - получаем услугу у друга	
+			gaussParallelSolver->resultCalculation(pMatrix, pVector, pResult, threads_array[i]); // вызываем метод объекта - получаем услугу у друга	
 			finishTime = omp_get_wtime(); // останавливаем таймер, от полученного времени убавляем время старта, чтобы получить потраченнное время 
 			printf("\nTime: %f second, method: %s, threads count: %d, pResult[0]= %f", finishTime - startTime, "Gauss parallel", threads_array[i], pResult[0]);
 			times += ";";
@@ -103,7 +106,7 @@ int main() {
 			times += to_string(finishTime - startTime);
 			printf(" iteration sani: %d", CGSerialSolver->iterationsCount); //CG әдісінің бірі болса, онда қайталанулар санын көрсетеміз
 			matrixHelpers::testSolvingResult(originalA, originalB, pResult, mSize);//Нәтижені тексеру
-			for (int i = 0; i < 5; i++) {
+			for (int i = 0; i < m; i++) {
 				for (int i = 0; i < mSize; i++) {
 					for (int j = 0; j < mSize; j++)
 						pMatrix[i][j] = pMatrix[j][i] = originalA[i][j];
@@ -113,7 +116,7 @@ int main() {
 				startTime = omp_get_wtime(); //запускаем таймер
 				// CG параллель алгоритмі threads[i] поток
 				CGParallelSolver = new CGParallel();
-				CGParallelSolver->resultCalculation(pMatrix, pVector, pResult, mSize, i + 1);
+				CGParallelSolver->resultCalculation(pMatrix, pVector, pResult, mSize, threads_array[i]);
 				finishTime = omp_get_wtime(); // останавливаем таймер, от полученного времени убавляем время старта, чтобы получить потраченнное время
 				printf("\nTime: %f second, method: %s, threads count: %d, pResult[0]= %f", finishTime - startTime, "CG parallel", threads_array[i], pResult[0]);
 				times += ";";
@@ -123,7 +126,7 @@ int main() {
 			}
 		}
 		const char* ti = times.c_str();
-		csvExport::writeGauss(mSize, ti);
+		csvExport::addTimes(mSize, ti);
 	}
 
 }
