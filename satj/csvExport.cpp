@@ -1,20 +1,20 @@
-#include "csvExport.h"
+п»ї#include "csvExport.h"
 #include <iostream>
 #include <fstream>
 #include <string>
 #include "string.h"
 using namespace std;
 
-int csvExport::write(int *threads_array, int size) { // метод записи результатов в файл
+int csvExport::write(int *threads_array, int size) { // РјРµС‚РѕРґ Р·Р°РїРёСЃРё СЂРµР·СѓР»СЊС‚Р°С‚РѕРІ РІ С„Р°Р№Р»
     ofstream myfile;
     myfile.open("result.csv");
-    myfile << "Размер;Гаусс линейно;";
+    myfile << "Р Р°Р·РјРµСЂ;Р“Р°СѓСЃСЃ Р»РёРЅРµР№РЅРѕ;";
     for (int i = 0; i < size; i++) {
-        myfile << "Гаусс параллель(" << threads_array[i] << ");";
+        myfile << "Р“Р°СѓСЃСЃ РїР°СЂР°Р»Р»РµР»СЊ(" << threads_array[i] << ");";
     }
-    myfile << "CG линейно;";
+    myfile << "CG Р»РёРЅРµР№РЅРѕ;";
     for (int i = 0; i < size; i++) {
-        myfile << "CG параллель(" << threads_array[i] << ");";
+        myfile << "CG РїР°СЂР°Р»Р»РµР»СЊ(" << threads_array[i] << ");";
     }
     myfile.close();
     return 0;
@@ -23,8 +23,8 @@ int csvExport::write(int *threads_array, int size) { // метод записи результатов
 int csvExport::addTimes(int Size, const char* times)
 {
     ofstream myfile;
-    myfile.open("result.csv",ios::app);
-    myfile << "\n" <<Size << ";" << times ;
+    myfile.open("result.csv",ios::app); // С„Р°Р№Р»РґС‹ Р°С€С‹Рї, СЃРѕТЈС‹РЅР° Р°Р»С‹Рї Р±Р°СЂР°РґС‹(С‚Р°Рє, С‡С‚РѕР±С‹ РїСЂРµРґС‹РґСѓС‰РёРµ РЅРµ СЃС‚РµСЂР»РёСЃСЊ)
+    myfile << "\n" <<Size << "x" << Size << ";" << times;
     myfile.close();
     return 0;
 }

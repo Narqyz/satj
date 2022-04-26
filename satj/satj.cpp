@@ -24,12 +24,12 @@ int main() {
 	int m = sizeof(threads_array) / sizeof(threads_array[0]);
 	csvExport::write(threads_array, m);
 
-	for (int mSize = 100; mSize <= 1000; mSize += 100) { // тут размер матриц 
+	for (int mSize = 100; mSize <= 10000; mSize += 500) { // тут размер матриц 
 		cout << "\n Matrix size = " << mSize;
 		double** originalA, ** pMatrix; //Коэффицент матрицасы (екі өлшемді)
 		double* originalB, * pVector; //Сызықтық жүйенің оң жағы
 		double* pResult; //Нәтиже векторы
-		string times = "";
+		string times = ""; //строка для csv
 
 		originalB = new double[mSize];
 		pVector = new double[mSize];
@@ -116,9 +116,11 @@ int main() {
 				matrixHelpers::testSolvingResult(originalA, originalB, pResult, mSize);//Нәтижені тексеру
 			}
 		}
+		
 		csvExport::replaceAll(times,".", ",");
-		const char* ti = times.c_str();
+		const char* ti = times.c_str(); // меняем стринг на чар, точку на запятую
 		csvExport::addTimes(mSize, ti);
+		if (mSize == 100) mSize = 0;
 	}
 
 }
