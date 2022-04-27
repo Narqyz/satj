@@ -49,12 +49,7 @@ int main() {
 		CGSerial* CGSerialSolver;
 		CGParallel* CGParallelSolver;
 
-		for (int i = 0; i < mSize; i++) {
-			for (int j = 0; j < mSize; j++)
-				pMatrix[i][j] = pMatrix[j][i] = originalA[i][j];
-			pVector[i] = originalB[i];
-		}
-
+		matrixHelpers::setDefault(originalA, originalB, mSize, pMatrix, pVector, pResult);
 		double startTime = omp_get_wtime(); //запускаем таймер
 		gaussSerialSolver = new gaussSerial(mSize);  	// Гаусс сызықты алгоритмі
 		gaussSerialSolver->resultCalculation(pMatrix, pVector, pResult); // вызываем метод объекта - получаем услугу у друга
@@ -64,12 +59,7 @@ int main() {
 		matrixHelpers::testSolvingResult(originalA, originalB, pResult, mSize);	//Нәтижені тексеру
 
 		for (int k = 0; k < m; k++) {
-			for (int i = 0; i < mSize; i++) {
-				for (int j = 0; j < mSize; j++)
-					pMatrix[i][j] = pMatrix[j][i] = originalA[i][j];
-				pVector[i] = originalB[i];
-			}
-			pResult = new double[mSize];// Обнуляем вектор решений 
+			matrixHelpers::setDefault(originalA, originalB, mSize, pMatrix, pVector, pResult);
 			startTime = omp_get_wtime(); //запускаем таймер
 			gaussParallelSolver = new gaussParallel(mSize);// создаем объект - добавляем в друзья
 			gaussParallelSolver->resultCalculation(pMatrix, pVector, pResult, threads_array[k]); // Гаусс параллель алгоритмі threads[i] поток
@@ -78,18 +68,14 @@ int main() {
 			times += ";" + to_string(finishTime - startTime); //для сохранения в файле
 			matrixHelpers::testSolvingResult(originalA, originalB, pResult, mSize);//Нәтижені тексеру
 		}
-		for (int i = 0; i < mSize; i++) {
-			for (int j = 0; j < mSize; j++)
-				pMatrix[i][j] = pMatrix[j][i] = originalA[i][j];
-			pVector[i] = originalB[i];
-		}
-		pResult = new double[mSize];// Обнуляем вектор решений 
+
+		matrixHelpers::setDefault(originalA, originalB, mSize, pMatrix, pVector, pResult);
 		if (!matrixHelpers::checkSymmetrical(pMatrix, mSize)) {
 			printf("\n Matrix is not symmetrical");
-			matrixHelpers::printMatrix(originalA, mSize);
+			matrixHelpers::printMatrix(pMatrix, mSize);
 		} else if(!matrixHelpers::checkPositiveDefinite(pMatrix, mSize)) {
 			printf("\n Matrix is not Positive Definite");
-			matrixHelpers::printMatrix(originalA, mSize);
+			matrixHelpers::printMatrix(pMatrix, mSize);
 		} else {
 			startTime = omp_get_wtime(); //запускаем таймер
 			CGSerialSolver = new CGSerial();  // CG сызықты алгоритмі
@@ -100,12 +86,8 @@ int main() {
 			printf(" iteration sani: %d", CGSerialSolver->iterationsCount); //CG әдісінің бірі болса, онда қайталанулар санын көрсетеміз
 			matrixHelpers::testSolvingResult(originalA, originalB, pResult, mSize);//Нәтижені тексеру
 			for (int k = 0; k < m; k++) {
-				for (int i = 0; i < mSize; i++) {
-					for (int j = 0; j < mSize; j++)
-						pMatrix[i][j] = pMatrix[j][i] = originalA[i][j];
-					pVector[i] = originalB[i];
-				}
-				pResult = new double[mSize];// Обнуляем вектор решений 
+
+				matrixHelpers::setDefault(originalA, originalB, mSize, pMatrix, pVector, pResult);
 				startTime = omp_get_wtime(); //запускаем таймер
 				CGParallelSolver = new CGParallel();  // CG параллель алгоритмі threads[i] поток
 				CGParallelSolver->resultCalculation(pMatrix, pVector, pResult, mSize, threads_array[k]);

@@ -69,3 +69,12 @@ void matrixHelpers::printMatrix(double** matrix, int size) {
 	}
 	printf("\n");
 }
+
+void matrixHelpers::setDefault(double** originalA, double* originalB, int size, double** A,double* B, double* X) {
+	for (int i = 0; i < size; i++) {
+		B[i] = originalB[i];
+		X[i] = 0;
+		for (int j = 0; j < size; j++)
+			A[i][j] = originalA[i][j];
+	}
+}
