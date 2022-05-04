@@ -13,11 +13,15 @@ void CGSerial::resultCalculation(double** pMatrix, double* pVector, double* pRes
 	A_prev_d = new double[Size];
 	// Бастапқы мәндерді енгізіп қою
 	for (i = 0; i < Size; i++) {
-		pResult[i] = 0;
+		pResult[i] = pVector[i];
 		g[i] = pVector[i];
-		d[i] = -pVector[i];
+		for (j = 0; j < Size; j++) {
+			g[i] -= pMatrix[i][j] * pVector[j];
+		}
+		d[i] = g[i];
 		sum_new_g += g[i] * g[i];
 	}
+	sum_PR = sum_new_g;
 	do {
 		Iter++;
 		sum_prev_g = sum_new_g;
@@ -37,8 +41,8 @@ void CGSerial::resultCalculation(double** pMatrix, double* pVector, double* pRes
 		sum_new_g = 0;
 		sum_PR = 0;
 		for (i = 0; i < Size; i++) {
-			pResult[i] = pResult[i] - step * d[i];
-			g[i] = g[i] + step * A_prev_d[i];
+			pResult[i] += step * d[i];
+			g[i] -=  step * A_prev_d[i];
 			sum_new_g += g[i] * g[i];
 		}
 
@@ -49,7 +53,7 @@ void CGSerial::resultCalculation(double** pMatrix, double* pVector, double* pRes
 
 		// 5 этап вычисление new_d - жаңа бағыт
 		for (i = 0; i < Size; i++) {
-			d[i] = -g[i] + beta * d[i];
+			d[i] = g[i] + beta * d[i];
 		}
 		iterationsCount = Iter;
 	} while (sqrt(sum_new_g) > Accuracy);

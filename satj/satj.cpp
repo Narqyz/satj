@@ -19,10 +19,11 @@ using namespace std;
 #include "csvExport.h" // *.csv файлмен жұмыс
 
 int main() {
+	int experiment_number = 2; // номер эксперимента
 	printf("Max threads count = %d", omp_get_max_threads());
 	int threads_array[] = { 2, 4, 6, 8, 10, 12 }; // тут количество потоков
 	int m = sizeof(threads_array) / sizeof(threads_array[0]);
-	csvExport::write(threads_array, m);
+	csvExport::write(threads_array, experiment_number, m);
 
 	for (int mSize = 100; mSize <= 10000; mSize += 500) { // тут размер матриц 
 		cout << "\n Matrix size = " << mSize;
@@ -40,8 +41,9 @@ int main() {
 			originalA[i] = new double[mSize];
 			pMatrix[i] = new double[mSize];
 		}
-
-		dataGen::DiagonalDataInitialization(originalA, originalB, mSize);		//Деректерді генерациялау, pMatrix пен pVector кездейсоқ сандармен толтыру
+		if (experiment_number == 1) dataGen::DiagonalDataInitialization(originalA, originalB, mSize);		//Деректерді генерациялау, pMatrix пен pVector кездейсоқ сандармен толтыру
+		else if (experiment_number == 2)  dataGen::ThreeDiagonalDataInitialization(originalA, originalB, mSize);		//Деректерді генерациялау, pMatrix пен pVector кездейсоқ сандармен толтыру
+		else dataGen::randomDataInitialization(originalA, originalB, mSize);		//Деректерді генерациялау, pMatrix пен pVector кездейсоқ сандармен толтыру
 
 		//Объекты бәрін құрастырамыз
 		gaussSerial* gaussSerialSolver;
@@ -101,7 +103,7 @@ int main() {
 		
 		csvExport::replaceAll(times,".", ",");
 		const char* ti = times.c_str(); // меняем стринг на чар, точку на запятую
-		csvExport::addTimes(mSize, ti);
+		csvExport::addTimes(mSize, experiment_number, ti);
 		if (mSize == 100) mSize = 0;
 	}
 
