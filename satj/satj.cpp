@@ -41,7 +41,7 @@ int main() {
 			pMatrix[i] = new double[mSize];
 		}
 
-		dataGen::randomDataInitialization(originalA, originalB, mSize);		//Деректерді генерациялау, pMatrix пен pVector кездейсоқ сандармен толтыру
+		dataGen::DiagonalDataInitialization(originalA, originalB, mSize);		//Деректерді генерациялау, pMatrix пен pVector кездейсоқ сандармен толтыру
 
 		//Объекты бәрін құрастырамыз
 		gaussSerial* gaussSerialSolver;
