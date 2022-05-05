@@ -19,13 +19,19 @@ using namespace std;
 #include "csvExport.h" // *.csv файлмен жұмыс
 
 int main() {
-	int experiment_number = 2; // номер эксперимента
+	/*
+	* НОМЕР ЭКСРЕПИМЕНТА
+	* 1 - диагональная матрица, результаты храниться в result1.csv
+	* 2 - трехдиагональная матрица, результаты храниться в result2.csv
+	* 3 - полная матрица, результаты храниться в result3.csv
+	*/
+	int experiment_number = 1; // номер эксперимента
 	printf("Max threads count = %d", omp_get_max_threads());
 	int threads_array[] = { 2, 4, 6, 8, 10, 12 }; // тут количество потоков
 	int m = sizeof(threads_array) / sizeof(threads_array[0]);
 	csvExport::write(threads_array, experiment_number, m);
 
-	for (int mSize = 100; mSize <= 10000; mSize += 500) { // тут размер матриц 
+	for (int mSize = 100; mSize <= 3000; mSize += 500) { // тут размер матриц 
 		cout << "\n Matrix size = " << mSize;
 		double** originalA, ** pMatrix; //Коэффицент матрицасы (екі өлшемді)
 		double* originalB, * pVector; //Сызықтық жүйенің оң жағы

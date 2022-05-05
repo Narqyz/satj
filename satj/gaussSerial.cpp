@@ -53,16 +53,16 @@ int gaussSerial::findPivotRow(double** pMatrix, int Iter) {
 }
 
 // Бағанның басқа элементтерін жою
-int gaussSerial::serialColumnElimination(double** pMatrix, double* pVector, int Pivot, int Iter) {
+int gaussSerial::serialColumnElimination(double** pMatrix, double* pVector, int PivotRow, int Iter) {
 	double PivotValue, PivotFactor;
-	PivotValue = pMatrix[Pivot][Iter];
+	PivotValue = pMatrix[PivotRow][Iter];
 	for (int i = 0; i < mSize; i++) {
 		if (pSerialPivotIter[i] == -1) {
 			PivotFactor = pMatrix[i][Iter] / PivotValue;
 			for (int j = Iter; j < mSize; j++) {
-				pMatrix[i][j] -= PivotFactor * pMatrix[Pivot][j];
+				pMatrix[i][j] -= PivotFactor * pMatrix[PivotRow][j];
 			}
-			pVector[i] -= PivotFactor * pVector[Pivot];
+			pVector[i] -= PivotFactor * pVector[PivotRow];
 		}
 	}
 	return 0;
