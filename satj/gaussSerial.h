@@ -10,9 +10,9 @@ private:
 	int* pSerialPivotIter; // Жолдар бұрылу болатын итерациялар
 
 	int findPivotRow(double** pMatrix, int Iter);
-	int serialGaussianElimination(double** pMatrix, double* pVector);
-	int serialBackSubstitution(double** pMatrix, double* pVector, double* pResult);
-	int serialColumnElimination(double** pMatrix, double* pVector, int Pivot, int Iter);
+	void serialGaussianElimination(double** pMatrix, double* pVector);
+	void serialBackSubstitution(double** pMatrix, double* pVector, double* pResult);
+	void serialColumnElimination(double** pMatrix, double* pVector, int Pivot, int Iter);
 
 };
 
