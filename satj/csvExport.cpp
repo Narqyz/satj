@@ -8,8 +8,9 @@ using namespace std;
 int csvExport::write(int *threads_array, int experiment_number, int size) { // метод записи результатов в файл
     ofstream myfile;
     string filename = "result";
-    filename += experiment_number;
+    filename += to_string(experiment_number);
     filename +=".csv";
+    cout << filename;
     myfile.open(filename);
     myfile << "Размер;Гаусс линейно;";
     for (int i = 0; i < size; i++) {
@@ -26,7 +27,10 @@ int csvExport::write(int *threads_array, int experiment_number, int size) { // �
 int csvExport::addTimes(int Size, int experiment_number, const char* times)
 {
     ofstream myfile;
-    myfile.open("result.csv",ios::app); // файлды ашып, соңына алып барады(так, чтобы предыдущие не стерлись)
+    string filename = "result";
+    filename += to_string(experiment_number);
+    filename += ".csv";
+    myfile.open(filename,ios::app); // файлды ашып, соңына алып барады(так, чтобы предыдущие не стерлись)
     myfile << "\n" <<Size << "x" << Size << ";" << times;
     myfile.close();
     return 0;

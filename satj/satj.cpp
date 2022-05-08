@@ -25,7 +25,7 @@ int main() {
 	* 2 - трехдиагональная матрица, результаты храниться в result2.csv
 	* 3 - полная матрица, результаты храниться в result3.csv
 	*/
-	int experiment_number = 1; // номер эксперимента
+	int experiment_number = 3; // номер эксперимента
 	printf("Max threads count = %d", omp_get_max_threads());
 	int threads_array[] = { 2, 4, 6, 8, 10, 12 }; // тут количество потоков
 	int m = sizeof(threads_array) / sizeof(threads_array[0]);
