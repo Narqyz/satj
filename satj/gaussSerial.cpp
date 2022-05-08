@@ -4,6 +4,16 @@
 #include "matrixHelpers.h"
 #include <iostream>
 
+/*
+Класс конструкторы. 
+Есептеу орындалу барысында екі ақпаратты, 
+әр жолдың жетекші болғаны және қай итерацияда 
+қай жол жетекші болғанын сақтайтын екі массив қажет. 
+pSerialPivotIter массиві тура жүріс кезінде алдыңғы 
+итерацияларда жетекші болған жолдарды арналған. 
+Басында бұл массивтің барлық элементі -1 тең болады. 
+pSerialPivotPos массиві кері жүріс кезінде теңдеулерді шешу 
+ретін анықтауға қажет. Бұл әдістің коды келесідей болады:*/
 gaussSerial::gaussSerial(int size) {
 	mSize = size;
 	pSerialPivotIter = new int[size];             // хранить в каком цикле стал главным определенная строка, нужен для прямого хода
@@ -13,7 +23,13 @@ gaussSerial::gaussSerial(int size) {
 	}
 }
 
-
+/*
+Көрсетілген әдістерді ретімен орындау әдісі. 
+Бұл әдіс – есептеуді бастаушы әдіс. 
+Мұнда әдістерді орындау реті көрсетіледі. 
+Бағандарды кезегімен жою үшін итерациямен орындаймыз. 
+Бұл әдістің коды келесідей болады:
+*/
 int gaussSerial::resultCalculation(double** pMatrix, double* pVector, double* pResult) {
 	serialGaussianElimination(pMatrix, pVector);	// Тура жүріс, айнымалыларды Гаусс бойынша жою
 	serialBackSubstitution(pMatrix, pVector, pResult); // Кері жүріс, айнымалыларды есептеу	
@@ -35,6 +51,12 @@ void gaussSerial::serialGaussianElimination(double** pMatrix, double* pVector) {
 }
 
 // Iter бағаны үшін макс элементті жолды таңдау жолды табу
+/*Максимумды іздеу әдісі. 
+Бұл әдісте біз баған бойынша барлық жолды циклмен өтіп модулі бойынша 
+үлкен және pSerialPivotIter массивіне жол индексі -1 – ге тең жолдарды іздейді. 
+Әдіс ішінде екі айнымалы қолданылады. MaxValue – цикл бағандағы модулі бойынша үлкен 
+элементтің мәні, PivotRow – цикл бағандағы модулі бойынша үлкен элемент орналасқан
+жолдың индексі. Бұл әдістің коды келесідей болады:*/
 int gaussSerial::findPivotRow(double** pMatrix, int Iter) {
 	double MaxValue = 0; // бағандағы макс мәні
 	int PivotRow = -1; // бағандағы макс мән жолдың индексі
@@ -50,6 +72,18 @@ int gaussSerial::findPivotRow(double** pMatrix, int Iter) {
 }
 
 // Бағанның басқа элементтерін жою
+/*
+* Баған басқа элементтерін жою әдісі. 
+Бұл әдісте біз алдыңғы итерацияларда жетекші 
+болмаған жолдардың баған элементін жоямыз, нөлге айнылдырамыз. 
+Сондай – ақ, жойылатын бағаннан кейінгі тұрған элементтерге де 
+және бос мүшелер векторына да арифметикалық түрлендіруді орындаймыз. 
+PivotValue – баған бойынша үлкен мәні, PivotFactor алгебралық түрлендіру 
+үшін көбейту мәні. Жоюды орындау кезінде, алдыңғы жоюлар орындалған кездегі 
+жетекші болған жолдарға алгебралық түрлендірулер орындалмауы керек. 
+Оны қадағалау үшін pSerialPivotIter массивіндегі сәйкес жолдың мәні -1 – ге 
+тең болмауы керек. Бұл әдістің коды келесідей болады:
+*/
 void gaussSerial::serialColumnElimination(double** pMatrix, double* pVector, int PivotRow, int Iter) {
 	double PivotValue, PivotFactor;
 	PivotValue = pMatrix[PivotRow][Iter];
@@ -65,6 +99,12 @@ void gaussSerial::serialColumnElimination(double** pMatrix, double* pVector, int
 }
 
 // Кері жүріс
+/*
+* Кері жүріс – айнымалыларды есептеу әдісі. 
+Бұл әдісте жетекші болу ретімен жазылған pSerialPivotPos 
+массивіне соңынан басына қарай жүре отырып, айнымалыларды 
+есептеп pResult массивіне жазып отырамыз. Бұл әдістің коды келесідей болады:
+*/
 void gaussSerial::serialBackSubstitution(double** pMatrix, double* pVector, double* pResult) {
 	for (int i = mSize - 1; i >= 0; i--) {
 		int RowIndex = pSerialPivotPos[i];

@@ -65,7 +65,7 @@ int main() {
 		printf("\nTime: %f second, method: %s, pResult[0]= %f", finishTime - startTime, "Gauss serial", pResult[0]);
 		times += to_string(finishTime - startTime); //для сохранения в файле
 		matrixHelpers::testSolvingResult(originalA, originalB, pResult, mSize);	//Нәтижені тексеру
-
+		// matrixHelpers::printVector(pResult, mSize);
 		for (int k = 0; k < m; k++) {
 			matrixHelpers::setDefault(originalA, originalB, mSize, pMatrix, pVector, pResult);
 			startTime = omp_get_wtime(); //запускаем таймер
