@@ -6,7 +6,8 @@
 #include <iostream>
 
 //конструктор - условие для доступа к классу
-gaussParallel::gaussParallel(int size) {
+gaussParallel::gaussParallel(int size, int threads_count) {
+	omp_set_num_threads(threads_count); // устанавливаем количество потоков в "параллельных" блоках 	
 	mSize = size;
 	pSerialPivotIter = new int[size]; // хранить в каком цикле стал главным определенная строка, нужен для прямого хода
 	pSerialPivotPos = new int[size]; // хранить порядок строк по итерации, нужен для обратного хода		
@@ -16,8 +17,7 @@ gaussParallel::gaussParallel(int size) {
 	}
 }
 
-int gaussParallel::resultCalculation(double** pMatrix, double* pVector, double* pResult, int threads_count) {
-	omp_set_num_threads(threads_count); // устанавливаем количество потоков в "параллельных" блоках 	
+int gaussParallel::resultCalculation(double** pMatrix, double* pVector, double* pResult) {	 
 	gaussianElimination(pMatrix, pVector); // Тура жүріс, айнымалыларды Гаусс бойынша жою	
 	backSubstitution(pMatrix, pVector, pResult); // Кері жүріс, айнымалыларды есептеу
 	return 0;
@@ -26,10 +26,8 @@ int gaussParallel::resultCalculation(double** pMatrix, double* pVector, double* 
 
 // Тура жүріс, айнымалыларды Гаусс бойынша жою
 int gaussParallel::gaussianElimination(double** pMatrix, double* pVector) {
-	int Iter;
-	int PivotRow;
-	for (Iter = 0; Iter < mSize; Iter++) {
-		PivotRow = findPivotRow(pMatrix, Iter); // бағандағы макс табу
+	for (int Iter = 0; Iter < mSize; Iter++) {
+		int PivotRow = findPivotRow(pMatrix, Iter); // бағандағы макс табу
 		pSerialPivotPos[Iter] = PivotRow; // хранить порядок строк по итерации, нужен для обратного хода
 		pSerialPivotIter[PivotRow] = Iter; // хранить в каком цикле стал главным определенная строка, нужен для прямого хода		
 		columnElimination(pMatrix, pVector, PivotRow, Iter); // Бағанның басқа элементтерін жою

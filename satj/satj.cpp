@@ -69,8 +69,8 @@ int main() {
 		for (int k = 0; k < m; k++) {
 			matrixHelpers::setDefault(originalA, originalB, mSize, pMatrix, pVector, pResult);
 			startTime = omp_get_wtime(); //запускаем таймер
-			gaussParallelSolver = new gaussParallel(mSize);// создаем объект - добавляем в друзья
-			gaussParallelSolver->resultCalculation(pMatrix, pVector, pResult, threads_array[k]); // Гаусс параллель алгоритмі threads[i] поток
+			gaussParallelSolver = new gaussParallel(mSize, threads_array[k]);// создаем объект - добавляем в друзья
+			gaussParallelSolver->resultCalculation(pMatrix, pVector, pResult); // Гаусс параллель алгоритмі threads[i] поток
 			finishTime = omp_get_wtime(); // останавливаем таймер, от полученного времени убавляем время старта, чтобы получить потраченнное время 
 			printf("\nTime: %f second, method: %s, threads count: %d, pResult[0]= %f", finishTime - startTime, "Gauss parallel", threads_array[k], pResult[0]);
 			times += ";" + to_string(finishTime - startTime); //для сохранения в файле
