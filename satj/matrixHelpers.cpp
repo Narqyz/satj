@@ -19,12 +19,13 @@ int matrixHelpers::testSolvingResult(double** pMatrix, double* pVector, double* 
 	pRightPartVector = new double[Size];
 
 	for (i = 0; i < Size; i++) {
-		pRightPartVector[i] = 0;
+		double tmp = 0;
+#pragma omp parallel for reduction(+:tmp)
 		for (j = 0; j < Size; j++) {
-			pRightPartVector[i] += pMatrix[i][j] * pResult[j];
+			tmp += pMatrix[i][j] * pResult[j];
 		}
+		pRightPartVector[i] = tmp;
 	}
-
 #pragma omp parallel for reduction(+:equal)
 	for (i = 0; i < Size; i++) {
 		if (fabs(pRightPartVector[i] - pVector[i]) > Accuracy) {
@@ -40,20 +41,7 @@ int matrixHelpers::testSolvingResult(double** pMatrix, double* pVector, double* 
 	delete[] pRightPartVector;
 	return 0;
 }
-bool matrixHelpers::checkSymmetrical(double** pMatrix, int Size) {
-	for (int i = 0; i < Size; i++) {
-		for (int j = i; j < Size; j++) {
-			if (pMatrix[i][j] != pMatrix[j][i]) return false;
-		}
-	}
-	return true;
-}
-bool matrixHelpers::checkPositiveDefinite(double** pMatrix, int Size)
-{
-	return true;
-}
 void matrixHelpers::printVector(double* matrix, int size) {
-
 	for (int i = 0; i < size; i++) {
 		printf("%.4f ", matrix[i]);
 	}
