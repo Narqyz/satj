@@ -9,15 +9,11 @@
  * Функция проверяет результат:
  * умножает матрицу на вектор-решении и сравнивает с результатом
  */
-int matrixHelpers::testSolvingResult(double** pMatrix, double* pVector, double* pResult, int Size) {
-	/* Buffer for storing the vector, that is a result of multiplication
-	of the linear system matrix by the vector of unknowns */
+void matrixHelpers::testSolvingResult(double** pMatrix, double* pVector, double* pResult, int Size) {
 	double* pRightPartVector;
-	// Flag, that shows wheather the right parts vectors are identical or not
 	int equal = 0, i, j;
-	double Accuracy = 0.01f; // Comparison accuracy
+	double Accuracy = 0.01f;
 	pRightPartVector = new double[Size];
-
 	for (i = 0; i < Size; i++) {
 		double tmp = 0;
 #pragma omp parallel for reduction(+:tmp)
@@ -32,14 +28,13 @@ int matrixHelpers::testSolvingResult(double** pMatrix, double* pVector, double* 
 			equal++;
 		}
 	}
-	if (equal > 1) {
+	if (equal > 0) {
 		printf(" Wrong.");
 	}
 	else {
 		//printf(" Сorrect.");
 	}
 	delete[] pRightPartVector;
-	return 0;
 }
 void matrixHelpers::printVector(double* matrix, int size) {
 	for (int i = 0; i < size; i++) {
@@ -59,6 +54,7 @@ void matrixHelpers::printMatrix(double** matrix, int size) {
 }
 
 void matrixHelpers::setDefault(double** originalA, double* originalB, int size, double** A,double* B, double* X) {
+#pragma omp parallel for
 	for (int i = 0; i < size; i++) {
 		B[i] = originalB[i];
 		X[i] = 0;

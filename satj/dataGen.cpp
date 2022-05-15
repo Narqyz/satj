@@ -49,5 +49,3 @@ void dataGen::ThreeDiagonalDataInitialization(double** pMatrix, double* pVector,
 		}
 	}
 }
-
-
