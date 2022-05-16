@@ -9,7 +9,6 @@
 #include <string>
 using namespace std;
 
-
 #include "dataGen.h" // кездейсоқ матрица құратын класс
 #include "matrixHelpers.h" // шешімді тексеру класс
 #include "gaussSerial.h"  // Гаусс сызықты орындайтын коды
@@ -25,8 +24,8 @@ int main() {
 	* 2 - трехдиагональная матрица, результаты храниться в result2.csv
 	* 3 - полная матрица, результаты храниться в result3.csv
 	*/
-	int experiment_number = 3; // номер эксперимента
 	printf("Max threads count = %d", omp_get_max_threads());
+	int experiment_number = 3; // номер эксперимента
 	int threads_array[] = { 2, 4, 6, 8, 10, 12 }; // тут количество потоков
 	int m = sizeof(threads_array) / sizeof(threads_array[0]);
 	csvExport::write(threads_array, experiment_number, m);
