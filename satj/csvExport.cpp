@@ -10,7 +10,7 @@ int csvExport::write(int *threads_array, int experiment_number, int size) { // �
     string filename = "result";
     filename += to_string(experiment_number);
     filename +=".csv";
-    cout << filename;
+    cout << '\n' << filename;
     myfile.open(filename);
     myfile << "Размер;Гаусс линейно;";
     for (int i = 0; i < size; i++) {
