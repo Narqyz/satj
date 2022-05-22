@@ -27,8 +27,7 @@ void CGParallel::resultCalculation(double** pMatrix, double* pVector, double* pR
 		double ip = 0;
 
 		// 1 этап вычисление step - қадам ұзындығы
-#pragma omp parallel private (i,j)
-#pragma omp for reduction(+:ip)
+#pragma omp parallel for reduction(+:ip) private (i,j)
 		for (i = 0; i < Size; i++) {
 			A_prev_d[i] = 0;
 			for (j = 0; j < Size; j++){
