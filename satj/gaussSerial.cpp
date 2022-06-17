@@ -85,11 +85,10 @@ PivotValue – баған бойынша үлкен мәні, PivotFactor алг
 тең болмауы керек. Бұл әдістің коды келесідей болады:
 */
 void gaussSerial::serialColumnElimination(double** pMatrix, double* pVector, int PivotRow, int Iter) {
-	double PivotValue, PivotFactor;
-	PivotValue = pMatrix[PivotRow][Iter];
+	double PivotValue = pMatrix[PivotRow][Iter];
 	for (int i = 0; i < mSize; i++) {
 		if (pSerialPivotIter[i] == -1) {
-			PivotFactor = pMatrix[i][Iter] / PivotValue;
+			double PivotFactor = pMatrix[i][Iter] / PivotValue;
 			for (int j = Iter; j < mSize; j++) {
 				pMatrix[i][j] -= PivotFactor * pMatrix[PivotRow][j];
 			}

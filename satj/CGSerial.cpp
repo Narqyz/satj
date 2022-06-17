@@ -39,7 +39,6 @@ void CGSerial::resultCalculation(double** pMatrix, double* pVector, double* pRes
 
 		// 2 - 3 этап вычисление new_x - жаңа шешім, new_g - жаңа градиент
 		sum_new_g = 0;
-		sum_PR = 0;
 		for (i = 0; i < Size; i++) {
 			pResult[i] += step * d[i];
 			g[i] -=  step * A_prev_d[i];

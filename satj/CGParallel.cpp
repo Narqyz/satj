@@ -16,9 +16,12 @@ void CGParallel::resultCalculation(double** pMatrix, double* pVector, double* pR
 	// Бастапқы мәндерді енгізіп қою
 #pragma omp parallel for reduction(+:sum_new_g) private (i)
 	for (i = 0; i < Size; i++) {
-		pResult[i] = 0;
+		pResult[i] = pVector[i];
 		g[i] = pVector[i];
-		d[i] = -pVector[i];
+		for (j = 0; j < Size; j++) {
+			g[i] -= pMatrix[i][j] * pVector[j];
+		}
+		d[i] = g[i];
 		sum_new_g += g[i] * g[i];
 	}
 	do {
@@ -30,10 +33,10 @@ void CGParallel::resultCalculation(double** pMatrix, double* pVector, double* pR
 #pragma omp parallel for reduction(+:ip) private (i,j)
 		for (i = 0; i < Size; i++) {
 			A_prev_d[i] = 0;
-			for (j = 0; j < Size; j++){
+			for (j = 0; j < Size; j++) {
 				A_prev_d[i] += pMatrix[i][j] * d[j];
 			}
-			ip += A_prev_d[i] * d[i];
+			ip += A_prev_d[i] * d[i];  //  бөлімі
 		}
 		step = sum_prev_g / ip;
 
@@ -41,10 +44,10 @@ void CGParallel::resultCalculation(double** pMatrix, double* pVector, double* pR
 		sum_new_g = 0;
 #pragma omp parallel for reduction(+:sum_new_g) private (i)
 		for (i = 0; i < Size; i++) {
-			pResult[i] = pResult[i] - step * d[i];
-			g[i] = g[i] + step * A_prev_d[i];
+			pResult[i] += step * d[i];
+			g[i] -= step * A_prev_d[i];
 			sum_new_g += g[i] * g[i];
-		}		
+		}
 
 		if (sqrt(sum_new_g) <= Accuracy) break;
 
@@ -54,7 +57,7 @@ void CGParallel::resultCalculation(double** pMatrix, double* pVector, double* pR
 		// 5 этап вычисление new_d - жаңа бағыт
 #pragma omp parallel for private (i)
 		for (i = 0; i < Size; i++) {
-			d[i] = -g[i] + beta * d[i];
+			d[i] = g[i] + beta * d[i];
 		}
 		iterationsCount = Iter;
 	} while (sqrt(sum_new_g) > Accuracy);
